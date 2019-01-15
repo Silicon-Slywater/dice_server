@@ -1,0 +1,1 @@
+g++ -static-libgcc -static-libstdc++ server.cpp -o bin\server.exe -lws2_32
