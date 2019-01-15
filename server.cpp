@@ -9,6 +9,7 @@
 #include <random>
 #include <cfloat>
 #include <fstream>
+#include <sstream>
 #include <windows.h>
 #include <Tchar.h>
 #include "mingw.thread.h"
@@ -31,6 +32,7 @@ int MAX_CLIENTS = 6;
 //std::string PORT = "4562";
 std::string PORT = DEFAULT_PORT;
 std::string IP_ADDRESS = "127.0.0.1";
+int CLIENT_COUNT = 0;
  
 //Function Prototypes
 int process_client(client_type &new_client, std::vector<client_type> &client_array, std::thread &thread);
@@ -46,8 +48,8 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
 	std::mt19937 mt(rd());
 	std::uniform_real_distribution<double> dist(double(0.0), std::nextafter(double(1.0), DBL_MAX));
 	double rn;
+	std::stringstream title;
  
-	//Session
 	while (1)
 	{
 		memset(tempmsg, 0, DEFAULT_BUFLEN);
@@ -175,17 +177,22 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
 				closesocket(client_array[new_client.id].socket);
 				client_array[new_client.id].socket = INVALID_SOCKET;
  
-				//Broadcast the disconnection message to the other clients
 				for (int i = 0; i < MAX_CLIENTS; i++)
 				{
 					if (client_array[i].socket != INVALID_SOCKET)
 						iResult = send(client_array[i].socket, msg.c_str(), strlen(msg.c_str()), 0);
 				}
+				
+				--CLIENT_COUNT;
+				title.str("");
+				title.clear();
+				title << "dice_server: " << std::to_string(CLIENT_COUNT) << " client(s) connected";
+				SetConsoleTitle(_T(title.str().c_str()));
  
 				break;
 			}
 		}
-	} //end while
+	}
  
 	thread.detach();
  
@@ -217,8 +224,8 @@ int main()
 	std::thread my_thread[MAX_CLIENTS];
 	HANDLE hConsole;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::stringstream title;
 
-	//Initialize Winsock
 	std::cout << "Intializing Winsock..." << std::endl;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
  
@@ -229,7 +236,6 @@ int main()
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
  
-	//Setup Server
 	std::cout << "Configuring server..." << std::endl;
 	std::ifstream IPFile;
 	int offset; 
@@ -250,23 +256,18 @@ int main()
 	}
 	getaddrinfo(IP_ADDRESS.c_str(), PORT.c_str(), &hints, &server);
  
-	//Create a listening socket for connecting to server
 	std::cout << "Creating server socket..." << std::endl;
 	server_socket = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
  
-	//Setup socket options
 	setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &OPTION_VALUE, sizeof(int)); //Make it possible to re-bind to a port that was used within the last 2 minutes
 	setsockopt(server_socket, IPPROTO_TCP, TCP_NODELAY, &OPTION_VALUE, sizeof(int)); //Used for interactive programs
  
-	//Assign an address to the server socket.
 	std::cout << "Binding socket..." << std::endl;
 	bind(server_socket, server->ai_addr, (int)server->ai_addrlen);
  
-	//Listen for incoming connections.
 	std::cout << "Awaiting clients, listening..." << std::endl;
 	listen(server_socket, SOMAXCONN);
  
-	//Initialize the client list
 	for (int i = 0; i < MAX_CLIENTS; i++)
 	{
 		client[i] = { -1, 7, "", INVALID_SOCKET };
@@ -279,10 +280,10 @@ int main()
  
 		if (incoming == INVALID_SOCKET) continue;
  
-		//Reset the number of clients
+		//Reset client count
 		num_clients = -1;
  
-		//Create a temporary id for the next client
+		//Create temporary client ID
 		temp_id = -1;
 		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
@@ -306,7 +307,7 @@ int main()
 			client[temp_id].colour = rand()%15+1;
 			int iResult = recv(client[temp_id].socket, tempname, DEFAULT_BUFLEN, 0);
 			client[temp_id].name = tempname;
-			//Send the id to that client
+			//Send client ID
 			SetConsoleTextAttribute(hConsole,client[temp_id].colour);
 			std::cout << client[temp_id].name;
 			SetConsoleTextAttribute(hConsole,7);
@@ -322,8 +323,9 @@ int main()
 			msg = std::to_string(client[temp_id].id);
 			send(client[temp_id].socket, msg.c_str(), strlen(msg.c_str()), 0);
  
-			//Create a thread process for that client
+			//Create client thread
 			my_thread[temp_id] = std::thread(process_client, std::ref(client[temp_id]), std::ref(client), std::ref(my_thread[temp_id]));
+			++CLIENT_COUNT;
 		}
 		else
 		{
@@ -331,23 +333,20 @@ int main()
 			send(incoming, msg.c_str(), strlen(msg.c_str()), 0);
 			std::cout << msg << std::endl;
 		}
-
-		//SetConsoleTitle(_T("dice_server ("+std::to_string(num_clients)+" client(s) connected)");
-		SetConsoleTitle(_T(std::to_string(num_clients).c_str()));
-	} //end while
+		title.str("");
+		title.clear();
+		title << "dice_server: " << std::to_string(CLIENT_COUNT) << " client(s) connected";
+		SetConsoleTitle(_T(title.str().c_str()));
+	}
  
- 
-	//Close listening socket
 	closesocket(server_socket);
  
-	//Close client socket
 	for (int i = 0; i < MAX_CLIENTS; i++)
 	{
 		my_thread[i].detach();
 		closesocket(client[i].socket);
 	}
  
-	//Clean up Winsock
 	WSACleanup();
 	std::cout << "Server has closed successfully." << std::endl;
  

@@ -5,7 +5,9 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <sstream>
 #include <windows.h>
+#include <Tchar.h>
 #include "mingw.thread.h"
  
 using namespace std;
@@ -82,11 +84,11 @@ int main()
 	string message;
 	HANDLE hConsole;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	stringstream title;
  
 	cout << "Starting client...\nPlease enter the target address: ";
 	getline(cin,IP_ADDRESS);
  
-	// Initialize Winsock
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (iResult != 0) {
 		cout << "WSAStartup() failed with error: " << iResult << endl;
@@ -100,7 +102,6 @@ int main()
 	 
 	cout << "Connecting...\n";
  
-	// Resolve the server address and port
 	iResult = getaddrinfo(IP_ADDRESS.c_str(), DEFAULT_PORT, &hints, &result);
 	if (iResult != 0) {
 		cout << "getaddrinfo() failed with error: " << iResult << endl;
@@ -112,7 +113,6 @@ int main()
 	// Attempt to connect to an address until one succeeds
 	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
  
-		// Create a SOCKET for connecting to server
 		client.socket = socket(ptr->ai_family, ptr->ai_socktype,
 			ptr->ai_protocol);
 		if (client.socket == INVALID_SOCKET) {
@@ -122,7 +122,6 @@ int main()
 			return 1;
 		}
  
-		// Connect to server.
 		iResult = connect(client.socket, ptr->ai_addr, (int)ptr->ai_addrlen);
 		if (iResult == SOCKET_ERROR) {
 			closesocket(client.socket);
@@ -145,7 +144,7 @@ int main()
 	getline(cin, NAME);
 	iResult = send(client.socket, NAME.c_str(), strlen(NAME.c_str()), 0);
 	
-	//Obtain id from server for this client;
+	//Receive client ID
 	recv(client.socket, client.received_message, DEFAULT_BUFLEN, 0);
 	message = string(client.received_message).c_str();
 	SetConsoleTextAttribute(hConsole,atoi(message.substr(message.find("¹")+2,(message.find("²")-4)-message.find("¹")+2).c_str()));
@@ -160,7 +159,11 @@ int main()
 		client.id = atoi(client.received_message);
  
 		thread my_thread(process_client, client);
- 
+		
+		title.str("");
+		title.clear();
+		title << "dice_client: " << message.substr(message.find("²")+2,(message.find_last_of("²")-5)-message.find("²")+2) << " [" << client.id << "]";
+		SetConsoleTitle(_T(title.str().c_str()));
  
 		while (1)
 		{
@@ -174,7 +177,6 @@ int main()
 			}
 		}
  
-		//Shutdown the connection since no more data will be sent
 		my_thread.detach();
 	}
 	else
