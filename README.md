@@ -1,5 +1,5 @@
 # dice_server
-A simple simple server capable of chat and dice rolling functions, suitable for online DnD.
+A simple server capable of chat and dice rolling functions, suitable for online DnD.
 ## Server Usage:
 Forward port 4562 and run the server executable. Clients should be able to connect via the server's IP.
 
