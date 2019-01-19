@@ -7,6 +7,8 @@
 #include <thread>
 #include <sstream>
 #include <windows.h>
+#include <conio.h>
+#include <vector>
 #include <Tchar.h>
 #include "mingw.thread.h"
  
@@ -26,15 +28,19 @@ struct client_type
 	int id;
 	char received_message[DEFAULT_BUFLEN];
 };
- 
+	
 int process_client(client_type &new_client);
 int main();
+
+bool ccin;
+vector<string> stmsg;
 
 int process_client(client_type &new_client)
 {
 	HANDLE hConsole;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	string msg;
+	
 	while (1)
 	{
 		memset(new_client.received_message, 0, DEFAULT_BUFLEN);
@@ -46,18 +52,25 @@ int process_client(client_type &new_client)
 			if (iResult != SOCKET_ERROR)
 			{
 				msg = string(new_client.received_message).c_str();
-				SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("¹")+2,(msg.find("²")-4)-msg.find("¹")+2).c_str()));
-				std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-				SetConsoleTextAttribute(hConsole,7);
-				if (msg.find("˅") != string::npos)
+				if (!ccin)
 				{
-					std::cout << msg.substr(msg.find_last_of("²")+1,(msg.find("˄")-2)-msg.find_last_of("²")+1);
-					SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("˄")+2,msg.find("˅")-msg.find("˄")+2).c_str()));
-					std::cout << msg.substr(msg.find("˅")+2,(msg.find_last_of("˅")-5)-msg.find("˅")+2);
+					SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("¹")+2,(msg.find("²")-4)-msg.find("¹")+2).c_str()));
+					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
 					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("˅")+1) << std::endl;
+					if (msg.find("˅") != string::npos)
+					{
+						std::cout << msg.substr(msg.find_last_of("²")+1,(msg.find("˄")-2)-msg.find_last_of("²")+1);
+						SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("˄")+2,msg.find("˅")-msg.find("˄")+2).c_str()));
+						std::cout << msg.substr(msg.find("˅")+2,(msg.find_last_of("˅")-5)-msg.find("˅")+2);
+						SetConsoleTextAttribute(hConsole,7);
+						std::cout << msg.substr(msg.find_last_of("˅")+1) << std::endl;
+					}
+					else {std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;}
 				}
-				else {std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;}
+				else
+				{
+					stmsg.push_back(msg);
+				}
 			}
 			else
 			{
@@ -82,6 +95,7 @@ int main()
 	client_type client = { INVALID_SOCKET, -1, "" };
 	int iResult = 0;
 	string message;
+	string lmsg;
 	HANDLE hConsole;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	stringstream title;
@@ -157,7 +171,6 @@ int main()
 	if (message != "Server is full.")
 	{
 		client.id = atoi(client.received_message);
- 
 		thread my_thread(process_client, client);
 		
 		title.str("");
@@ -167,13 +180,68 @@ int main()
  
 		while (1)
 		{
-			getline(cin, sent_message);
-			if (sent_message != "") {iResult = send(client.socket, sent_message.c_str(), strlen(sent_message.c_str()), 0);}
+			HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); 
+			DWORD mode = 0;
+			GetConsoleMode(hStdin, &mode);
+			SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
+			//getline(cin, sent_message);
+			char c = getch();
+			if (!ccin) {sent_message = "";}
+			if (c != '\0' && c != '\r' && c != '\b' && isprint(c))
+			{
+				sent_message += c;
+				ccin = true;
+			}
+			else if (c == '\r')
+			{
+				cout << endl;
+				ccin = false;
+			}
+			else if (c == '\b')
+			{
+				if(sent_message.size() > 0) {sent_message.pop_back();}
+				cout << c << " " << c;
+			}
+			if (c == -32)
+			{
+				c = getch();
+				if (c == 72)
+				{
+					cout << "\r                                                       \r" << lmsg;
+					sent_message = lmsg;
+				}
+				c = '\0';
+				ccin = true;
+			}
+			if (isprint(c)) {cout << c;}
+			
+			SetConsoleMode(hStdin, mode);
+		
+			if (sent_message != "" && !ccin) {lmsg = sent_message; iResult = send(client.socket, sent_message.c_str(), strlen(sent_message.c_str()), 0);}
  
 			if (iResult <= 0)
 			{
 				cout << "send() failed: " << WSAGetLastError() << endl;
 				break;
+			}
+			if (stmsg.size() > 0)
+			{
+				for (string cur : stmsg)
+				{
+					SetConsoleTextAttribute(hConsole,atoi(cur.substr(cur.find("¹")+2,(cur.find("²")-4)-cur.find("¹")+2).c_str()));
+					std::cout << cur.substr(cur.find("²")+2,(cur.find_last_of("²")-5)-cur.find("²")+2);
+					SetConsoleTextAttribute(hConsole,7);
+					if (cur.find("˅") != string::npos)
+					{
+						std::cout << cur.substr(cur.find_last_of("²")+1,(cur.find("˄")-2)-cur.find_last_of("²")+1);
+						SetConsoleTextAttribute(hConsole,atoi(cur.substr(cur.find("˄")+2,cur.find("˅")-cur.find("˄")+2).c_str()));
+						std::cout << cur.substr(cur.find("˅")+2,(cur.find_last_of("˅")-5)-cur.find("˅")+2);
+						SetConsoleTextAttribute(hConsole,7);
+						std::cout << cur.substr(cur.find_last_of("˅")+1) << std::endl;
+					}
+					else {std::cout << cur.substr(cur.find_last_of("²")+1) << std::endl;}
+				}
+				stmsg.clear();
 			}
 		}
  

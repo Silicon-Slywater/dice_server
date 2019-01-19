@@ -66,108 +66,130 @@ int process_client(client_type &new_client, std::vector<client_type> &client_arr
 				std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
 				SetConsoleTextAttribute(hConsole,7);
 				std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-
-				//Broadcast that message to the other clients
-				if (std::string(tempmsg) == "/d2")
+				
+				if (tempmsg[0] == '/')
 				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D2 and got: " + std::to_string(round(rn+1)).erase(std::to_string(round(rn+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn+1) + ")";
-					msg.erase(msg.find_last_not_of('0') + 1, std::string::npos);
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d4")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D4 and got: " + std::to_string(round(rn*3+1)).erase(std::to_string(round(rn*3+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*3+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d6")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D6 and got: " + std::to_string(round(rn*5+1)).erase(std::to_string(round(rn*5+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*5+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d8")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D8 and got: " + std::to_string(round(rn*7+1)).erase(std::to_string(round(rn*7+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*7+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d10")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D10 and got: " + std::to_string(round(rn*9+1)).erase(std::to_string(round(rn*9+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*9+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d12")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D12 and got: " + std::to_string(round(rn*11+1)).erase(std::to_string(round(rn*11+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*11+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d20")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D20 and got: " + std::to_string(round(rn*19+1)).erase(std::to_string(round(rn*19+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*19+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/d100")
-				{
-					rn = dist(mt);
-					msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D100 and got: " + std::to_string(round(rn*99+1)).erase(std::to_string(round(rn*99+1)).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*99+1) + ")";
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;
-				}
-				else if (std::string(tempmsg) == "/g")
-				{
-					rn = dist(mt);
-					if (rn < 0.05) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄76˅CRITICAL FAILURE˅" + "\t\t(" + std::to_string(rn) + ")";}
-					else if (rn >= 0.05 && rn < 0.5) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄4˅FAILURE˅" + "\t\t(" + std::to_string(rn) + ")";}
-					else if (rn >= 0.5 && rn < 0.95) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄2˅SUCCESS˅" + "\t\t(" + std::to_string(rn) + ")";}
-					else if (rn >= 0.95) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄42˅CRITICAL SUCCESS˅" + "\t\t(" + std::to_string(rn) + ")";}
-					SetConsoleTextAttribute(hConsole,new_client.colour);
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2).c_str();
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("²")+1,(msg.find("˄")-2)-msg.find_last_of("²")+1);
-					SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("˄")+2,msg.find("˅")-msg.find("˄")+2).c_str()));
-					std::cout << msg.substr(msg.find("˅")+2,(msg.find_last_of("˅")-5)-msg.find("˅")+2);
-					SetConsoleTextAttribute(hConsole,7);
-					std::cout << msg.substr(msg.find_last_of("˅")+1) << std::endl;
-				}
-				for (int i = 0; i < MAX_CLIENTS; i++)
-				{
-					if (client_array[i].socket != INVALID_SOCKET)
+					int co = 0;
+					for (size_t ofs = std::string(tempmsg).find(","); ofs != std::string::npos; ofs = std::string(tempmsg).find(",",ofs+std::string(",").length()))
 					{
-						if (new_client.id != i || std::string(tempmsg).find("/") != std::string::npos) {iResult = send(client_array[i].socket, msg.c_str(), strlen(msg.c_str()), 0);}
+						++co;
+					}
+					++co;
+					int c;
+					std::string dm;
+					for (c=1; c<=co; ++c)
+					{
+						rn = dist(mt);
+						int mod;
+						std::string modm;
+						if (c == 1 && co == 1) {dm = std::string(tempmsg).substr(std::string(tempmsg).find_last_of("/")+1);}
+						else if (c == 1 && co > 1) {dm =  std::string(tempmsg).substr(std::string(tempmsg).find("/")+1,(std::string(tempmsg).find_first_of(",")-2)-std::string(tempmsg).find("/")+1);}
+						else if (c > 1 && co > 1)
+						{
+							size_t fpos,lpos,from=0;
+							int i=0;
+							while (i<c-1)
+							{
+								fpos = std::string(tempmsg).find(",",from);
+								if (fpos == std::string::npos) {break;}
+								from = fpos+=1;
+								++i;
+							}
+							from=0;
+							i=0;
+							while (i<c)
+							{
+								lpos = std::string(tempmsg).find(",",from);
+								if (lpos == std::string::npos) {break;}
+								from = lpos+=1;
+								++i;
+							}
+							if (std::string(tempmsg).substr(fpos,(lpos-1)-fpos).length() > 0) {dm = std::string(tempmsg).substr(fpos,(lpos-1)-fpos);}
+						}
+						else if (c == co && co > 1) {dm = std::string(tempmsg).substr(std::string(tempmsg).find_last_of(",")+1);}
+						else {dm = "ERROR: Invalid command.";}
+	
+						if (dm.find("+") != std::string::npos) {mod = atoi((dm.substr(dm.find("+")+1)).c_str()); modm = dm.substr(dm.find("+"));}
+						else if (dm.find("-") != std::string::npos) {mod = atoi((dm.substr(dm.find("-"))).c_str()); modm = dm.substr(dm.find("-"));}
+						else {mod = 0; modm = "";}
+						
+						if (dm.find("d2") != std::string::npos && dm.find("d20") == std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D2" + modm + " and got: " + std::to_string(round(rn+1)).erase(std::to_string(round(rn+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn+1) + ")";
+						}
+						else if (dm.find("d4") != std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D4" + modm + " and got: " + std::to_string(round(rn*3+1)+mod).erase(std::to_string(round(rn*3+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*3+1) + ")";
+						}
+						else if (dm.find("d6") != std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D6" + modm + " and got: " + std::to_string(round(rn*5+1)+mod).erase(std::to_string(round(rn*5+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*5+1) + ")";
+						}
+						else if (dm.find("d8") != std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D8" + modm + " and got: " + std::to_string(round(rn*7+1)+mod).erase(std::to_string(round(rn*7+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*7+1) + ")";
+						}
+						else if (dm.find("d10") != std::string::npos && dm.find("d100") == std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D10" + modm + " and got: " + std::to_string(round(rn*9+1)+mod).erase(std::to_string(round(rn*9+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*9+1) + ")";
+						}
+						else if (dm.find("d12") != std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D12" + modm + " and got: " + std::to_string(round(rn*11+1)+mod).erase(std::to_string(round(rn*11+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*11+1) + ")";
+						}
+						else if (dm.find("d20") != std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D20" + modm + " and got: " + std::to_string(round(rn*19+1)+mod).erase(std::to_string(round(rn*19+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*19+1) + ")";
+						}
+						else if (dm.find("d100") != std::string::npos)
+						{
+							msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Rolled a D100" + modm + " and got: " + std::to_string(round(rn*99+1)+mod).erase(std::to_string(round(rn*99+1)+mod).find_last_not_of('0') + 1, std::string::npos) + "\t\t(" + std::to_string(rn*99+1) + ")";
+						}
+						SetConsoleTextAttribute(hConsole,new_client.colour);
+						std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2).c_str();
+						SetConsoleTextAttribute(hConsole,7);
+						if (dm.find("g") != std::string::npos)
+						{
+							if (rn < 0.05) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄76˅CRITICAL FAILURE˅" + "\t\t(" + std::to_string(rn) + ")";}
+							else if (rn >= 0.05 && rn < 0.5) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄4˅FAILURE˅" + "\t\t(" + std::to_string(rn) + ")";}
+							else if (rn >= 0.5 && rn < 0.95) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄2˅SUCCESS˅" + "\t\t(" + std::to_string(rn) + ")";}
+							else if (rn >= 0.95) {msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Took their chances: ˄42˅CRITICAL SUCCESS˅" + "\t\t(" + std::to_string(rn) + ")";}
+							std::cout << msg.substr(msg.find_last_of("²")+1,(msg.find("˄")-2)-msg.find_last_of("²")+1);
+							SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("˄")+2,msg.find("˅")-msg.find("˄")+2).c_str()));
+							std::cout << msg.substr(msg.find("˅")+2,(msg.find_last_of("˅")-5)-msg.find("˅")+2);
+							SetConsoleTextAttribute(hConsole,7);
+							std::cout << msg.substr(msg.find_last_of("˅")+1) << std::endl;
+						}
+						else {std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;}
+						for (int i = 0; i < MAX_CLIENTS; i++)
+						{
+							if (client_array[i].socket != INVALID_SOCKET)
+							{
+								if (new_client.id != i || tempmsg[0] == '/') 
+								{
+									iResult = send(client_array[i].socket, msg.c_str(), strlen(msg.c_str()), 0);
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					for (int i = 0; i < MAX_CLIENTS; i++)
+					{
+						if (client_array[i].socket != INVALID_SOCKET)
+						{
+							if (new_client.id != i) 
+							{
+								iResult = send(client_array[i].socket, msg.c_str(), strlen(msg.c_str()), 0);
+							}
+						}
 					}
 				}
 			}
 			else
 			{
-				msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Disconnected";
+				msg = "¹" + std::to_string(new_client.colour) + "²" + new_client.name + "² (" + std::to_string(new_client.id) + ") Disconnected.";
 				SetConsoleTextAttribute(hConsole,new_client.colour);
 				std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
 				SetConsoleTextAttribute(hConsole,7);
@@ -316,7 +338,7 @@ int main()
 			{
 				if (client[i].socket != INVALID_SOCKET)
 				{
-					msg = "¹" + std::to_string(client[temp_id].colour) + "²" + client[temp_id].name + "² (" + std::to_string(client[temp_id].id) + ") Accepted";
+					msg = "¹" + std::to_string(client[temp_id].colour) + "²" + client[temp_id].name + "² (" + std::to_string(client[temp_id].id) + ") Accepted.";
 					send(client[i].socket, msg.c_str(), strlen(msg.c_str()), 0);
 				}
 			}
