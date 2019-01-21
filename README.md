@@ -6,6 +6,8 @@ Forward port 4562 and run the server executable. Clients should be able to conne
 ## Client Usage:
 Run the client, and enter the IP address of the server. Once connected, enter a username.
 
+*NOTE: Make sure the input buffer is cleared when receiving messages, due to the altered nature of CIN.
+
 ### Dice Commands:
 ```
 /d2   -   Roll a D2

@@ -19,8 +19,8 @@ using namespace std;
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "4562"
 
-std::string IP_ADDRESS = "127.0.0.1";
-std::string NAME;
+string IP_ADDRESS = "127.0.0.1";
+string NAME;
 
 struct client_type
 {
@@ -55,17 +55,17 @@ int process_client(client_type &new_client)
 				if (!ccin)
 				{
 					SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("¹")+2,(msg.find("²")-4)-msg.find("¹")+2).c_str()));
-					std::cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
+					cout << msg.substr(msg.find("²")+2,(msg.find_last_of("²")-5)-msg.find("²")+2);
 					SetConsoleTextAttribute(hConsole,7);
 					if (msg.find("˅") != string::npos)
 					{
-						std::cout << msg.substr(msg.find_last_of("²")+1,(msg.find("˄")-2)-msg.find_last_of("²")+1);
+						cout << msg.substr(msg.find_last_of("²")+1,(msg.find("˄")-2)-msg.find_last_of("²")+1);
 						SetConsoleTextAttribute(hConsole,atoi(msg.substr(msg.find("˄")+2,msg.find("˅")-msg.find("˄")+2).c_str()));
-						std::cout << msg.substr(msg.find("˅")+2,(msg.find_last_of("˅")-5)-msg.find("˅")+2);
+						cout << msg.substr(msg.find("˅")+2,(msg.find_last_of("˅")-5)-msg.find("˅")+2);
 						SetConsoleTextAttribute(hConsole,7);
-						std::cout << msg.substr(msg.find_last_of("˅")+1) << std::endl;
+						cout << msg.substr(msg.find_last_of("˅")+1) << endl;
 					}
-					else {std::cout << msg.substr(msg.find_last_of("²")+1) << std::endl;}
+					else {cout << msg.substr(msg.find_last_of("²")+1) << endl;}
 				}
 				else
 				{
@@ -162,9 +162,9 @@ int main()
 	recv(client.socket, client.received_message, DEFAULT_BUFLEN, 0);
 	message = string(client.received_message).c_str();
 	SetConsoleTextAttribute(hConsole,atoi(message.substr(message.find("¹")+2,(message.find("²")-4)-message.find("¹")+2).c_str()));
-	std::cout << message.substr(message.find("²")+2,(message.find_last_of("²")-5)-message.find("²")+2);
+	cout << message.substr(message.find("²")+2,(message.find_last_of("²")-5)-message.find("²")+2);
 	SetConsoleTextAttribute(hConsole,7);
-	std::cout << message.substr(message.find_last_of("²")+1) << std::endl;
+	cout << message.substr(message.find_last_of("²")+1) << endl;
 	recv(client.socket, client.received_message, DEFAULT_BUFLEN, 0);
 	message = client.received_message;
  
@@ -199,6 +199,7 @@ int main()
 			}
 			else if (c == '\b')
 			{
+				ccin = true;
 				if(sent_message.size() > 0) {sent_message.pop_back();}
 				cout << c << " " << c;
 			}
@@ -210,10 +211,12 @@ int main()
 					cout << "\r                                                       \r" << lmsg;
 					sent_message = lmsg;
 				}
+				else if (c == 80) {cout << "\r                                                       \r";}
 				c = '\0';
 				ccin = true;
 			}
 			if (isprint(c)) {cout << c;}
+			if (sent_message == "") {ccin = false;}
 			
 			SetConsoleMode(hStdin, mode);
 		
@@ -224,22 +227,22 @@ int main()
 				cout << "send() failed: " << WSAGetLastError() << endl;
 				break;
 			}
-			if (stmsg.size() > 0)
+			if (stmsg.size() > 0 && !ccin)
 			{
 				for (string cur : stmsg)
 				{
 					SetConsoleTextAttribute(hConsole,atoi(cur.substr(cur.find("¹")+2,(cur.find("²")-4)-cur.find("¹")+2).c_str()));
-					std::cout << cur.substr(cur.find("²")+2,(cur.find_last_of("²")-5)-cur.find("²")+2);
+					cout << cur.substr(cur.find("²")+2,(cur.find_last_of("²")-5)-cur.find("²")+2);
 					SetConsoleTextAttribute(hConsole,7);
 					if (cur.find("˅") != string::npos)
 					{
-						std::cout << cur.substr(cur.find_last_of("²")+1,(cur.find("˄")-2)-cur.find_last_of("²")+1);
+						cout << cur.substr(cur.find_last_of("²")+1,(cur.find("˄")-2)-cur.find_last_of("²")+1);
 						SetConsoleTextAttribute(hConsole,atoi(cur.substr(cur.find("˄")+2,cur.find("˅")-cur.find("˄")+2).c_str()));
-						std::cout << cur.substr(cur.find("˅")+2,(cur.find_last_of("˅")-5)-cur.find("˅")+2);
+						cout << cur.substr(cur.find("˅")+2,(cur.find_last_of("˅")-5)-cur.find("˅")+2);
 						SetConsoleTextAttribute(hConsole,7);
-						std::cout << cur.substr(cur.find_last_of("˅")+1) << std::endl;
+						cout << cur.substr(cur.find_last_of("˅")+1) << endl;
 					}
-					else {std::cout << cur.substr(cur.find_last_of("²")+1) << std::endl;}
+					else {cout << cur.substr(cur.find_last_of("²")+1) << endl;}
 				}
 				stmsg.clear();
 			}
