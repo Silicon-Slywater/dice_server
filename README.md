@@ -1,12 +1,13 @@
 # dice_server
 A simple server capable of chat and dice rolling functions, suitable for online DnD.
 ## Server Usage:
-Forward port 4562 and run the server executable. Clients should be able to connect via the server's IP.
+Forward port 4562 and run the server executable. Clients can connect through the server's public IP.
+The maximum client count can be tweaked at start-up.
 
 ## Client Usage:
 Run the client, and enter the IP address of the server. Once connected, enter a username.
 
-*NOTE: Make sure the input buffer is cleared when receiving messages, due to the altered nature of CIN.*
+*NOTE: Make sure the input buffer is cleared when receiving messages (CIN has been altered for async).*
 
 ### Dice Commands:
 ```
