@@ -293,8 +293,13 @@ int main()
 	cout << "Binding socket..." << endl;
 	bind(server_socket, server->ai_addr, (int)server->ai_addrlen);
  
-	EXT_IP = ext_ip();
-	if (EXT_IP == "") EXT_IP = "Not Found";
+	//Print host info
+	if (InternetCheckConnection("http://myexternalip.com/raw",1,0))
+	{
+		EXT_IP = ext_ip();
+		if (EXT_IP == "") EXT_IP = "Not Found";
+	}
+	else EXT_IP = "OFFLINE\t";
 	SetConsoleTextAttribute(hConsole,112);
 	cout << "\n\t\t\t\t\t  \n  ";
 	SetConsoleTextAttribute(hConsole,7);
