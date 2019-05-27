@@ -133,19 +133,19 @@ int process_client(client_type &new_client, vector<client_type> &client_array, t
 						
 						if (dm.find("d2") != string::npos && dm.find("d20") == string::npos)
 						{
-							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D2" + modm + " and got: " + to_string(round(rn+1)).erase(to_string(round(rn+1)+mod).find_last_not_of('0'), string::npos) + "\t\t(" + to_string(rn+1) + ")";
+							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D2" + modm + " and got: " + to_string(round(rn+1)).erase(to_string(round(rn+1)+mod).find_last_not_of('0'), string::npos) + "\t\t\t(" + to_string(rn+1) + ")";
 						}
 						else if (dm.find("d4") != string::npos)
 						{
-							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D4" + modm + " and got: " + to_string(round(rn*3+1)+mod).erase(to_string(round(rn*3+1)+mod).find_last_not_of('0'), string::npos) + "\t\t(" + to_string(rn*3+1) + ")";
+							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D4" + modm + " and got: " + to_string(round(rn*3+1)+mod).erase(to_string(round(rn*3+1)+mod).find_last_not_of('0'), string::npos) + "\t\t\t(" + to_string(rn*3+1) + ")";
 						}
 						else if (dm.find("d6") != string::npos)
 						{
-							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D6" + modm + " and got: " + to_string(round(rn*5+1)+mod).erase(to_string(round(rn*5+1)+mod).find_last_not_of('0'), string::npos) + "\t\t(" + to_string(rn*5+1) + ")";
+							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D6" + modm + " and got: " + to_string(round(rn*5+1)+mod).erase(to_string(round(rn*5+1)+mod).find_last_not_of('0'), string::npos) + "\t\t\t(" + to_string(rn*5+1) + ")";
 						}
 						else if (dm.find("d8") != string::npos)
 						{
-							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D8" + modm + " and got: " + to_string(round(rn*7+1)+mod).erase(to_string(round(rn*7+1)+mod).find_last_not_of('0'), string::npos) + "\t\t(" + to_string(rn*7+1) + ")";
+							msg = "¹" + to_string(new_client.colour) + "²" + new_client.name + "² (" + to_string(new_client.id) + ") Rolled a D8" + modm + " and got: " + to_string(round(rn*7+1)+mod).erase(to_string(round(rn*7+1)+mod).find_last_not_of('0'), string::npos) + "\t\t\t(" + to_string(rn*7+1) + ")";
 						}
 						else if (dm.find("d10") != string::npos && dm.find("d100") == string::npos)
 						{
@@ -293,13 +293,8 @@ int main()
 	cout << "Binding socket..." << endl;
 	bind(server_socket, server->ai_addr, (int)server->ai_addrlen);
  
-	//Print host info
-	if (InternetCheckConnection("http://myexternalip.com/raw",1,0))
-	{
-		EXT_IP = ext_ip();
-		if (EXT_IP == "") EXT_IP = "Not Found";
-	}
-	else EXT_IP = "OFFLINE\t";
+	EXT_IP = ext_ip();
+	if (EXT_IP == "") EXT_IP = "Not Found";
 	SetConsoleTextAttribute(hConsole,112);
 	cout << "\n\t\t\t\t\t  \n  ";
 	SetConsoleTextAttribute(hConsole,7);
