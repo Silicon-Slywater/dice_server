@@ -1,5 +1,5 @@
 #define _WIN32_WINNT 0x501
-//#define WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iostream>
@@ -19,7 +19,7 @@ using namespace std;
 #define DEFAULT_BUFLEN 512
 #define DEFAULT_PORT "4562"
 
-string IP_ADDRESS = "127.0.0.1";
+string LOCAL_IP = "127.0.0.1";
 string NAME;
 
 struct client_type
@@ -33,6 +33,7 @@ int process_client(client_type &new_client);
 int main();
 
 bool ccin;
+bool connected;
 vector<string> stmsg;
 
 int process_client(client_type &new_client)
@@ -74,21 +75,25 @@ int process_client(client_type &new_client)
 			}
 			else
 			{
+				SetConsoleTextAttribute(hConsole,4);
 				cout << "recv() failed: " << WSAGetLastError() << endl;
+				SetConsoleTextAttribute(hConsole,7);
 				break;
 			}
 		}
 	}
  
 	if (WSAGetLastError() == WSAECONNRESET)
-		cout << "The server has been disconnected." << endl;
- 
+		connected = false;
+		SetConsoleTextAttribute(hConsole,76);
+		cout << "Lost connection to host." << endl << endl;
+		SetConsoleTextAttribute(hConsole,7);
+		cout << "Would you like to reconnect (Y/n)? ";
 	return 0;
 }
  
 int main()
 {
-	start:
 	WSAData wsa_data;
 	struct addrinfo *result = NULL, *ptr = NULL, hints;
 	string sent_message = "";
@@ -100,12 +105,17 @@ int main()
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	stringstream title;
  
-	cout << "Starting client...\nPlease enter the target address: ";
-	getline(cin,IP_ADDRESS);
+	if (NAME.empty())
+	{
+		cout << "Starting client...\nPlease enter the target address: ";
+		getline(cin,LOCAL_IP);
+	}
  
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsa_data);
 	if (iResult != 0) {
+		SetConsoleTextAttribute(hConsole,4);
 		cout << "WSAStartup() failed with error: " << iResult << endl;
+		SetConsoleTextAttribute(hConsole,7);
 		return 1;
 	}
  
@@ -113,12 +123,17 @@ int main()
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	 
-	cout << "Connecting...\n";
+	
+	connect:
+	cout << "Connecting..." << endl << endl;
  
-	iResult = getaddrinfo(IP_ADDRESS.c_str(), DEFAULT_PORT, &hints, &result);
+	iResult = getaddrinfo(LOCAL_IP.c_str(), DEFAULT_PORT, &hints, &result);
 	if (iResult != 0) {
+		SetConsoleTextAttribute(hConsole,4);
 		cout << "getaddrinfo() failed with error: " << iResult << endl;
+		SetConsoleTextAttribute(hConsole,76);
+		cout << "Unable to resolve hostname." << endl << endl;
+		SetConsoleTextAttribute(hConsole,7);
 		WSACleanup();
 		system("pause");
 		return 1;
@@ -130,7 +145,9 @@ int main()
 		client.socket = socket(ptr->ai_family, ptr->ai_socktype,
 			ptr->ai_protocol);
 		if (client.socket == INVALID_SOCKET) {
+			SetConsoleTextAttribute(hConsole,4);
 			cout << "socket() failed with error: " << WSAGetLastError() << endl;
+			SetConsoleTextAttribute(hConsole,7);
 			WSACleanup();
 			system("pause");
 			return 1;
@@ -148,14 +165,25 @@ int main()
 	freeaddrinfo(result);
  
 	if (client.socket == INVALID_SOCKET) {
-		cout << "Unable to connect to server!" << endl;
+		SetConsoleTextAttribute(hConsole,4);
+		cout << "Unable to connect to server." << endl;
+		SetConsoleTextAttribute(hConsole,76);
+		cout << "Could not reach host." << endl << endl;
+		SetConsoleTextAttribute(hConsole,7);
 		WSACleanup();
 		system("pause");
 		return 1;
 	}
  
-	cout << "Successfully Connected.\nPlease enter a username: ";
-	getline(cin, NAME);
+	if (NAME.empty())
+	{
+		SetConsoleTextAttribute(hConsole,2);
+		cout << "Successfully Connected." << endl;
+		SetConsoleTextAttribute(hConsole,7);
+		cout << "Please enter a username: ";
+		getline(cin, NAME);
+		cout << endl;
+	}
 	iResult = send(client.socket, NAME.c_str(), strlen(NAME.c_str()), 0);
 	
 	//Receive client ID
@@ -170,6 +198,7 @@ int main()
  
 	if (message != "Server is full.")
 	{
+		connected = true;
 		client.id = atoi(client.received_message);
 		thread my_thread(process_client, client);
 		
@@ -186,6 +215,17 @@ int main()
 			SetConsoleMode(hStdin, mode & (~ENABLE_ECHO_INPUT));
 			//getline(cin, sent_message);
 			char c = getch();
+			if (!connected && (c == 'Y' || c == 'y'))
+			{
+				cout << c << endl;
+				my_thread.detach();
+				goto connect; 
+			}
+			else if (!connected)
+			{
+				cout << c << endl;
+				break;
+			}
 			if (!ccin) {sent_message = "";}
 			if (c != '\0' && c != '\r' && c != '\b' && isprint(c))
 			{
@@ -222,9 +262,11 @@ int main()
 		
 			if (sent_message != "" && !ccin) {lmsg = sent_message; iResult = send(client.socket, sent_message.c_str(), strlen(sent_message.c_str()), 0);}
  
-			if (iResult <= 0)
+			if (connected && iResult <= 0)
 			{
+				SetConsoleTextAttribute(hConsole,4);
 				cout << "send() failed: " << WSAGetLastError() << endl;
+				SetConsoleTextAttribute(hConsole,7);
 				break;
 			}
 			if (stmsg.size() > 0 && !ccin)
@@ -252,13 +294,17 @@ int main()
 	}
 	else
 	{
+		SetConsoleTextAttribute(hConsole,4);
 		cout << client.received_message << endl;
+		SetConsoleTextAttribute(hConsole,7);
 	}
  
-	cout << "Shutting down socket..." << endl;
+	cout << endl << "Shutting down socket..." << endl;
 	iResult = shutdown(client.socket, SD_SEND);
 	if (iResult == SOCKET_ERROR) {
+		SetConsoleTextAttribute(hConsole,4);
 		cout << "shutdown() failed with error: " << WSAGetLastError() << endl;
+		SetConsoleTextAttribute(hConsole,7);
 		closesocket(client.socket);
 		WSACleanup();
 		system("pause");
